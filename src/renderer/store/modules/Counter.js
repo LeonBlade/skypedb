@@ -16,6 +16,12 @@ const actions = {
     // do something async
     commit('INCREMENT_MAIN_COUNTER');
   },
+  incr({ commit }) {
+    commit('INCREMENT_MAIN_COUNTER');
+  },
+  decr({ commit }) {
+    commit('DECREMENT_MAIN_COUNTER');
+  },
 };
 
 export default {
