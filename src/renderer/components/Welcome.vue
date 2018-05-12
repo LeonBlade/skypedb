@@ -20,15 +20,7 @@
     name: 'welcome',
     methods: {
       open() {
-        this.$dialog.showOpenDialog({
-          properties: ['openFile'],
-          filters: [
-            { name: 'SQLite', extensions: ['db'] },
-            { name: 'All files', extensions: ['*'] },
-          ],
-        }, (file) => {
-          console.log(file);
-        });
+        this.$store.dispatch('openDatabaseFile');
       },
       incr() {
         console.log(this.$store);
