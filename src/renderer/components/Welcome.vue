@@ -2,16 +2,27 @@
   <div class="container">
     <h1>SkypeDB</h1>
     <section>
-      <h4>Recent</h4>
+      <h4>Conversations</h4>
       <ul>
-        <li>example</li>
-        <li>example</li>
-        <li>example</li>
+        <li v-for="(convo, i) in this.$store.state.Database.conversations" :key="i">
+          <a @click="openConvo(convo.id)">{{ convo.displayname }} ({{ convo.msg_count }})</a>
+        </li>
       </ul>
     </section>
-    <button @click="open()">Open</button>
-    <div>{{ this.$store.state.Counter.main }}</div>
-    <button @click="incr()">Add</button><button @click="decr()">Remove</button>
+    
+    <hr />
+
+    <button @click="open()">Open</button> <span>{{ this.$store.state.Database.path }}</span>
+    <button @click="getConversations()" :disabled="this.$store.state.Database.path.length <= 0">Get Conversations</button>
+
+    <hr />
+
+    <div v-if="this.$store.state.Database.convo != null">
+      <div v-for="(message, i) in this.$store.state.Database.convo" :key="i">
+        <strong>{{ message.from_dispname }}</strong>
+        <p>{{ message.body_xml }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,16 +33,21 @@
       open() {
         this.$store.dispatch('openDatabaseFile');
       },
-      incr() {
-        console.log(this.$store);
-        this.$store.dispatch('incr');
+
+      getConversations() {
+        this.$store.dispatch('getConversations');
       },
-      decr() {
-        this.$store.dispatch('decr');
+
+      openConvo(id) {
+        this.$store.dispatch('openConvo', id);
       },
     },
   };
 </script>
 
 <style>
+  ul {
+    height: 300px;
+    overflow-y: auto;
+  }
 </style>
