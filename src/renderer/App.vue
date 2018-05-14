@@ -11,5 +11,6 @@
 </script>
 
 <style>
-  
+  @import "~bulma/css/bulma.css";
+  html, body { overflow-y: hidden; }
 </style>

@@ -1,37 +1,52 @@
 <template>
   <div class="container">
-    <h1>SkypeDB</h1>
-    <section>
-      <h4>Conversations</h4>
+
+    <section class="conversations">
       <ul>
-        <li v-for="(convo, i) in this.$store.state.Database.conversations" :key="i">
-          <a @click="openConvo(convo.id)">{{ convo.displayname }} ({{ convo.msg_count }})</a>
+        <li v-for="(convo, i) in convos" :key="i" @click="openConvo(convo.id)">
+          <img class="avatar" :src="`https://api.skype.com/users/${convo.identity}/profile/avatar`" />
+          <span>{{ convo.displayname }}</span>
         </li>
       </ul>
     </section>
-    
-    <hr />
 
-    <button @click="open()">Open</button> <span>{{ this.$store.state.Database.path }}</span>
-    <button @click="getConversations()" :disabled="this.$store.state.Database.path.length <= 0">Get Conversations</button>
+    <section class="messages">
+      Messages
+      <button @click="open()">Open</button>
+      <button @click="getConversations()">Get Conversations</button>
+      <section>
+        <div class="message" v-for="(message, i) in messages" :key="i">
+          <strong>{{ message.from_name }}</strong><span class="ts">{{ ts(message.timestamp) }}</span>
+          <p v-html="message.body">{{ message.body }}</p>
+        </div>
+      </section>
+    </section>
 
-    <hr />
-
-    <div v-if="this.$store.state.Database.convo != null">
-      <div v-for="(message, i) in this.$store.state.Database.convo" :key="i">
-        <strong>{{ message.from_dispname }}</strong>
-        <p>{{ message.body_xml }}</p>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
+  import moment from 'moment';
+
+  document.querySelector('#messages').addEventListener('click', (event) => {
+    event.preventDefault();
+  });
+
   export default {
     name: 'welcome',
+    computed: mapGetters({
+      convos: 'getConversations',
+      messages: 'getMessages',
+    }),
     methods: {
+      ts(timestamp) {
+        return moment(timestamp).format('MM/DD/YYYY h:mm A');
+      },
+
       open() {
         this.$store.dispatch('openDatabaseFile');
+        console.log(this.$store);
       },
 
       getConversations() {
@@ -46,8 +61,61 @@
 </script>
 
 <style>
-  ul {
-    height: 300px;
+  html, body, #app {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  div.container {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+  }
+  section.conversations {
+    width: 250px;
+    background: whiteSmoke;
+  }
+  section.messages {
+    height: 100%;
     overflow-y: auto;
+    flex: 1;
+  }
+  ul { 
+    list-style: none; 
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  li {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+  img.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 100px;
+  }
+  li:hover {
+    background: blue;
+    cursor: pointer;
+    color: white;
+  }
+  div.message {
+    margin: 16px;
+    border-radius: 3px;
+    padding: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.2);
+    word-wrap: break-word;
+  }
+  div.message p {
+    margin: 0;
+  }
+  .ts {
+    font-size: 0.8rem;
+    color: #888;
+    margin-left: 8px;
   }
 </style>

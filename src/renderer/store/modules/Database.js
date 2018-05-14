@@ -9,7 +9,7 @@ const state = {
   convo: null,
 };
 
-export const mutations = {
+const mutations = {
   SET_DATABASE_FILE(state, db) {
     state.path = db;
   },
@@ -52,7 +52,13 @@ const actions = {
   },
 
   getConversations({ commit }) {
-    db.all("SELECT c.id, c.displayname, COUNT(*) AS msg_count FROM Conversations AS c INNER JOIN Messages ON c.id = Messages.convo_id WHERE displayname <> '' GROUP BY c.id ORDER BY displayname", (err, rows) => {
+    db.all(`SELECT c.id, c.displayname, c.identity, COUNT(*) AS msg_count 
+            FROM Conversations AS c 
+            INNER JOIN Messages ON c.id = Messages.convo_id 
+            WHERE displayname <> '' 
+            GROUP BY c.id 
+            HAVING msg_count > 1 
+            ORDER BY displayname`, (err, rows) => {
       if (err) {
         throw err;
       }
@@ -62,7 +68,7 @@ const actions = {
   },
 
   openConvo({ commit }, id) {
-    db.all("SELECT from_dispname, body_xml FROM Messages WHERE convo_id = ? AND body_xml <> '' LIMIT 10", [id], (err, convo) => {
+    db.all("SELECT from_dispname AS from_name, body_xml AS body, timestamp__ms AS timestamp FROM Messages WHERE convo_id = ? AND body_xml <> '' LIMIT 1000", [id], (err, convo) => {
       if (err) {
         throw err;
       }
@@ -73,8 +79,14 @@ const actions = {
   },
 };
 
+const getters = {
+  getConversations: state => state.conversations,
+  getMessages: state => state.convo,
+};
+
 export default {
   state,
   mutations,
   actions,
+  getters,
 };
