@@ -1,9 +1,8 @@
 <template>
   <div class="container">
 
-    <nav class="navbar is-info">
-      <a class="button" @click="open()">Open</a>
-      <a class="button" @click="getConversations()">Get Conversations</a>
+    <nav class="navbar is-primary">
+      <button class="button" @click="open()">Open</button>
     </nav>
 
     <section class="conversations">
@@ -36,6 +35,7 @@
     }),
     mounted() {
       this.$nextTick(() => {
+        // reroute the link tags to open in external browser
         this.$el.querySelector('.messages').addEventListener('click', (event) => {
           if (event.target.tagName.toLowerCase() === 'a') {
             event.preventDefault();
@@ -49,9 +49,6 @@
       open() {
         this.$store.dispatch('openDatabaseFile');
       },
-      getConversations() {
-        this.$store.dispatch('getConversations');
-      },
       openConvo(id) {
         this.$store.dispatch('openConvo', id);
       },
@@ -59,28 +56,27 @@
   };
 </script>
 
-<style>
-  html, body, #app {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-  }
+
+<style scoped>
   div.container {
     display: grid;
     grid-template-columns: 250px auto;
     grid-template-rows: 64px auto;
     grid-template-areas: "nav nav" "conv chat";
+    overflow: hidden;
     height: 100%;
   }
+
   nav {
     grid-area: nav;
-    -webkit-app-region: drag;
   }
+
   section.conversations {
     grid-area: conv;
     background:white;
     overflow-y: auto;
   }
+
   section.messages {
     grid-area: chat;
     background: #eef0f1;
