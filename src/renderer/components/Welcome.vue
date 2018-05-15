@@ -1,25 +1,17 @@
 <template>
   <div class="container">
 
+    <nav class="navbar is-info">
+      <a class="button" @click="open()">Open</a>
+      <a class="button" @click="getConversations()">Get Conversations</a>
+    </nav>
+
     <section class="conversations">
-      <ul>
-        <li v-for="(convo, i) in convos" :key="i" @click="openConvo(convo.id)">
-          <img class="avatar" :src="`https://api.skype.com/users/${convo.identity}/profile/avatar`" />
-          <span>{{ convo.displayname }}</span>
-        </li>
-      </ul>
+      <contact v-for="(convo, i) in convos" :key="i" @click.native="openConvo(convo.id)" :contact="convo" />
     </section>
 
     <section class="messages">
-      Messages
-      <button @click="open()">Open</button>
-      <button @click="getConversations()">Get Conversations</button>
-      <section>
-        <div class="message" v-for="(message, i) in messages" :key="i">
-          <strong>{{ message.from_name }}</strong><span class="ts">{{ ts(message.timestamp) }}</span>
-          <p v-html="message.body">{{ message.body }}</p>
-        </div>
-      </section>
+      <message v-for="(message, i) in messages" :key="i" :message="message" />
     </section>
 
   </div>
@@ -27,32 +19,39 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import moment from 'moment';
+  import { shell } from 'electron';
 
-  document.querySelector('#messages').addEventListener('click', (event) => {
-    event.preventDefault();
-  });
+  import Contact from './Contact.vue';
+  import Message from './Message.vue';
 
   export default {
     name: 'welcome',
+    components: {
+      Contact,
+      Message,
+    },
     computed: mapGetters({
       convos: 'getConversations',
       messages: 'getMessages',
     }),
+    mounted() {
+      this.$nextTick(() => {
+        this.$el.querySelector('.messages').addEventListener('click', (event) => {
+          if (event.target.tagName.toLowerCase() === 'a') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            shell.openExternal(event.target.href);
+          }
+        });
+      });
+    },
     methods: {
-      ts(timestamp) {
-        return moment(timestamp).format('MM/DD/YYYY h:mm A');
-      },
-
       open() {
         this.$store.dispatch('openDatabaseFile');
-        console.log(this.$store);
       },
-
       getConversations() {
         this.$store.dispatch('getConversations');
       },
-
       openConvo(id) {
         this.$store.dispatch('openConvo', id);
       },
@@ -67,55 +66,24 @@
     overflow: hidden;
   }
   div.container {
-    display: flex;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 250px auto;
+    grid-template-rows: 64px auto;
+    grid-template-areas: "nav nav" "conv chat";
     height: 100%;
+  }
+  nav {
+    grid-area: nav;
+    -webkit-app-region: drag;
   }
   section.conversations {
-    width: 250px;
-    background: whiteSmoke;
+    grid-area: conv;
+    background:white;
+    overflow-y: auto;
   }
   section.messages {
-    height: 100%;
+    grid-area: chat;
+    background: #eef0f1;
     overflow-y: auto;
-    flex: 1;
-  }
-  ul { 
-    list-style: none; 
-    overflow-y: auto;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-  }
-  li {
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-  }
-  img.avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 100px;
-  }
-  li:hover {
-    background: blue;
-    cursor: pointer;
-    color: white;
-  }
-  div.message {
-    margin: 16px;
-    border-radius: 3px;
-    padding: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,.2);
-    word-wrap: break-word;
-  }
-  div.message p {
-    margin: 0;
-  }
-  .ts {
-    font-size: 0.8rem;
-    color: #888;
-    margin-left: 8px;
   }
 </style>

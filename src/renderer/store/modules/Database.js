@@ -52,23 +52,25 @@ const actions = {
   },
 
   getConversations({ commit }) {
-    db.all(`SELECT c.id, c.displayname, c.identity, COUNT(*) AS msg_count 
+    db.all(`SELECT c.id, c.displayname, c.identity AS username, t.avatar_url, COUNT(*) AS msg_count
             FROM Conversations AS c 
-            INNER JOIN Messages ON c.id = Messages.convo_id 
-            WHERE displayname <> '' 
+            INNER JOIN Messages ON c.id = Messages.convo_id
+            LEFT JOIN Contacts AS t ON username = t.skypename
+            WHERE c.displayname <> '' 
             GROUP BY c.id 
             HAVING msg_count > 1 
-            ORDER BY displayname`, (err, rows) => {
+            ORDER BY c.displayname COLLATE NOCASE`, (err, rows) => {
       if (err) {
         throw err;
       }
       commit('GET_CONVERSATIONS', rows);
-      console.log(rows);
     });
   },
 
   openConvo({ commit }, id) {
-    db.all("SELECT from_dispname AS from_name, body_xml AS body, timestamp__ms AS timestamp FROM Messages WHERE convo_id = ? AND body_xml <> '' LIMIT 1000", [id], (err, convo) => {
+    db.all(`SELECT from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
+            FROM Messages 
+            WHERE convo_id = ? AND body_xml <> '' LIMIT 1000`, [id], (err, convo) => {
       if (err) {
         throw err;
       }

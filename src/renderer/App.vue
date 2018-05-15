@@ -12,5 +12,27 @@
 
 <style>
   @import "~bulma/css/bulma.css";
-  html, body { overflow-y: hidden; }
+  html, body { 
+    font-size: 10pt;
+  }
+  .error {
+    color: white;
+    background: red;
+    padding: 8px;
+    font-family: monospace;
+  }
+  ::-webkit-scrollbar {     
+    background-color: rgba(0,0,0,.1);
+    width: .8em
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive,
+  ::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 100px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
 </style>
