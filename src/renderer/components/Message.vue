@@ -26,13 +26,13 @@
         return moment(ts).format('MM/DD/YYYY h:mm A');
       },
       parse(body) {
-        return body.replace(emoteRegex, '<img src="https://static-asm.secure.skypeassets.com/pes/v1/emoticons/$1/views/default_20" alt="$2" />');
+        return body.replace(emoteRegex, '<img class="emote" src="https://static-asm.secure.skypeassets.com/pes/v1/emoticons/$1/views/default_20" alt="$2" />');
       },
     },
   };
 </script>
 
-<style scoped>
+<style lang="scss">
   div.box {
     font-size: .9rem;
     background: white;
@@ -40,6 +40,9 @@
     border-radius: 4px;
     word-wrap: break-word;
     margin: 16px;
+  }
+  .emote {
+    vertical-align: sub;
   }
   span.username {
     font-weight: bold;

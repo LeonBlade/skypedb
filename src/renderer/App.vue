@@ -12,9 +12,12 @@
 
 <style>
   @import "~bulma/css/bulma.css";
-  html, body { 
+  html, body, #app { 
+    margin: 0; 
+    height: 100%; 
+    overflow: hidden;
     font-size: 10pt;
-  }
+  } 
   .error {
     color: white;
     background: red;
