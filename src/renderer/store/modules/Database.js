@@ -74,9 +74,9 @@ const actions = {
   },
 
   openConvo({ commit }, id) {
-    db.all(`SELECT from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
+    db.all(`SELECT id, from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
             FROM Messages 
-            WHERE convo_id = ? AND body_xml <> '' LIMIT 500`, [id], (err, messages) => {
+            WHERE convo_id = ? AND body_xml <> ''`, [id], (err, messages) => {
       if (err) {
         throw err;
       }
@@ -88,14 +88,13 @@ const actions = {
   },
 
   getMoreMessages({ commit }) {
-    console.log(state.currentConversation, state.convo.length);
-    db.all(`SELECT from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
+    db.all(`SELECT id, from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
             FROM Messages 
-            WHERE convo_id = ? AND body_xml <> '' LIMIT ?, 500`, [state.currentConversation, state.convo.length], (err, messages) => {
+            WHERE convo_id = ? AND body_xml <> '' AND id > ?`, [state.currentConversation, state.convo[state.convo.length - 1].id], (err, messages) => {
       if (err) {
         throw err;
       }
-      if (messages) {
+      if (messages && messages.length) {
         commit('GET_MORE_MESSAGES', messages);
       }
     });
