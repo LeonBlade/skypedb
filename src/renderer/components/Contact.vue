@@ -24,6 +24,8 @@ export default {
     transition: background .5s ease;
     border-radius: 5px;
     font-weight: 500;
+    user-select: none;
+    cursor: pointer;
   }
   div.contact[selected=selected], div.contact[selected=selected]:hover {
     background: #4d4f56;
