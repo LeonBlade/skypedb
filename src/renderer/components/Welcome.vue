@@ -6,10 +6,10 @@
     </nav>
 
     <section class="conversations">
-      <contact v-for="(convo, i) in convos" :key="i" @click.native="openConvo(convo.id)" :contact="convo" />
+      <contact v-for="(convo, i) in convos" :key="i" :selected="convo.id === currentConversation" @click.native="openConvo(convo.id)" :contact="convo" />
     </section>
 
-    <section class="messages">
+    <section infinite-wrapper class="messages">
       <message v-for="(message, i) in messages" :key="i" :message="message" />
     </section>
 
@@ -32,6 +32,7 @@
     computed: mapGetters({
       convos: 'getConversations',
       messages: 'getMessages',
+      currentConversation: 'getCurrentConversation',
     }),
     mounted() {
       this.$nextTick(() => {
@@ -73,7 +74,9 @@
 
   section.conversations {
     grid-area: conv;
-    background:white;
+    background:#3e4046;
+    background: linear-gradient(125deg, #3e4046, #232325);
+    color: #bbb;
     overflow-y: auto;
   }
 

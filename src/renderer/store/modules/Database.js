@@ -1,12 +1,13 @@
 import sqlite3 from 'sqlite3';
 const { dialog } = require('electron').remote;
-let db;
 
+let db;
 
 const state = {
   path: '',
   conversations: [],
   convo: null,
+  currentConversation: null,
 };
 
 const mutations = {
@@ -14,12 +15,20 @@ const mutations = {
     state.path = db;
   },
 
-  GET_CONVERSATIONS(state, convos) {
-    state.conversations = convos;
+  GET_CONVERSATIONS(state, messages) {
+    state.conversations = messages;
   },
 
-  OPEN_CONVO(state, convo) {
-    state.convo = convo;
+  OPEN_CONVO(state, messages) {
+    state.convo = messages;
+  },
+
+  SET_CURRENT_CONVO(state, id) {
+    state.currentConversation = id;
+  },
+
+  GET_MORE_MESSAGES(state, messages) {
+    state.convo = state.convo.concat(messages);
   },
 };
 
@@ -67,12 +76,27 @@ const actions = {
   openConvo({ commit }, id) {
     db.all(`SELECT from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
             FROM Messages 
-            WHERE convo_id = ? AND body_xml <> '' LIMIT 10`, [id], (err, convo) => {
+            WHERE convo_id = ? AND body_xml <> '' LIMIT 500`, [id], (err, messages) => {
       if (err) {
         throw err;
       }
-      if (convo) {
-        commit('OPEN_CONVO', convo);
+      if (messages) {
+        commit('OPEN_CONVO', messages);
+        commit('SET_CURRENT_CONVO', id);
+      }
+    });
+  },
+
+  getMoreMessages({ commit }) {
+    console.log(state.currentConversation, state.convo.length);
+    db.all(`SELECT from_dispname AS displayname, body_xml AS body, timestamp__ms AS timestamp 
+            FROM Messages 
+            WHERE convo_id = ? AND body_xml <> '' LIMIT ?, 500`, [state.currentConversation, state.convo.length], (err, messages) => {
+      if (err) {
+        throw err;
+      }
+      if (messages) {
+        commit('GET_MORE_MESSAGES', messages);
       }
     });
   },
@@ -81,6 +105,7 @@ const actions = {
 const getters = {
   getConversations: state => state.conversations,
   getMessages: state => state.convo,
+  getCurrentConversation: state => state.currentConversation,
 };
 
 export default {

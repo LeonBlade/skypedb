@@ -34,7 +34,6 @@
 
 <style lang="scss">
   div.box {
-    font-size: .9rem;
     background: white;
     padding: 16px;
     border-radius: 4px;
@@ -49,7 +48,7 @@
   }
   span.timestamp {
     color: #CCC;
-    font-size: .75rem;
+    font-size: .8rem;
   }
 </style>
 
