@@ -26,7 +26,8 @@
   }
   ::-webkit-scrollbar {     
     background-color: rgba(0,0,0,.1);
-    width: .8em
+    width: .8em;
+    height: .8em;
   }
 
   ::-webkit-scrollbar-thumb:window-inactive,
