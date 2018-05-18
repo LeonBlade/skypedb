@@ -9,7 +9,7 @@
       <contact v-for="(convo, i) in convos" :key="i" :selected="convo.id === currentConversation" @click.native="openConvo(convo.id)" :contact="convo" />
     </section>
 
-    <section infinite-wrapper class="messages">
+    <section ref="messages" class="messages">
       <message v-for="(message, i) in messages" :key="i" :message="message" />
     </section>
 
@@ -42,6 +42,12 @@
             event.preventDefault();
             event.stopImmediatePropagation();
             shell.openExternal(event.target.href);
+          }
+        });
+
+        this.$store.subscribe((mutation) => {
+          if (mutation.type === 'OPEN_CONVO') {
+            this.$refs.messages.scrollTo(0, 0);
           }
         });
       });
